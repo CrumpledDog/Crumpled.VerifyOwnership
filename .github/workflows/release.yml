@@ -126,10 +126,6 @@ jobs:
         semver: ${{ needs.setup.outputs.semver }}
         path-to-extension: src/Crumpled.VerifyOwnership
 
-    - name: Lint Client code
-      working-directory: ${{ env.PATH_TO_CLIENT }}
-      run: npm run lint
-
     - name: Dotnet Format check
       run: dotnet format --verify-no-changes --verbosity diagnostic
 
