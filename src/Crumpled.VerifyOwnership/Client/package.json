@@ -1,0 +1,20 @@
+{
+  "name": "crumpled-verify-ownership",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "watch": "tsc && vite build --watch",
+    "build": "tsc && vite build",
+    "generate-client": "node scripts/generate-openapi.js https://localhost:44399/umbraco/swagger/crumpledverifyownership/swagger.json"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.97.0",
+    "@umbraco-cms/backoffice": "17.5.3",
+    "chalk": "^5.6.2",
+    "cross-env": "^10.1.0",
+    "node-fetch": "^3.3.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  }
+}

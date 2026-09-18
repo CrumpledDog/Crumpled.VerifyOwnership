@@ -1,0 +1,14 @@
+{
+  "id": "Crumpled.VerifyOwnership",
+  "name": "Crumpled.VerifyOwnership",
+  "version": "0.0.0",
+  "allowTelemetry": true,
+  "extensions": [
+    {
+      "name": "Crumpled Verify Ownership Bundle",
+      "alias": "Crumpled.VerifyOwnership.Bundle",
+      "type": "bundle",
+      "js": "/App_Plugins/CrumpledVerifyOwnership/crumpled-verify-ownership.js"
+    }
+  ]
+}

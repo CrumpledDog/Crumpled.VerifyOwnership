@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".github/workflows/release.yml" />
+    <File Path=".github/workflows/ci.yml" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="src\Crumpled.VerifyOwnership\Crumpled.VerifyOwnership.csproj" />
+  <Project Path="src\Crumpled.VerifyOwnership.DemoSite\Crumpled.VerifyOwnership.DemoSite.csproj" />
+  <Project Path="tests\Crumpled.VerifyOwnership.Tests\Crumpled.VerifyOwnership.Tests.csproj" />
+</Solution>
