@@ -342,8 +342,10 @@ jobs:
     needs: [setup, build, test-packages]
     timeout-minutes: 5
     permissions:
-      id-token: write  # Required for NuGet trusted publishing (OIDC)
-      packages: write  # Required for pushing to GitHub Packages
+      contents: read     # Required to check out the repo (this repo is private, unlike the public
+                         # template reference repo, so an omitted scope here isn't implicitly granted)
+      id-token: write    # Required for NuGet trusted publishing (OIDC)
+      packages: write    # Required for pushing to GitHub Packages
     env:
       MYGET_API_KEY: ${{ secrets.MYGET_API_KEY }}
     steps:
