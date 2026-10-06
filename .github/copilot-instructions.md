@@ -36,7 +36,7 @@ Controllers/Middleware/Services/Options is version-agnostic and merges cleanly a
 ## API changes & codegen
 
 If you change `VerifyOwnershipConfigController` (routes, request/response models), regenerate the
-TypeScript client: start `Crumpled.VerifyOwnership.DemoSite` (`dotnet run`, `https://localhost:44399`),
+TypeScript client: start `Crumpled.VerifyOwnership.DemoSite` (`dotnet run`, `https://localhost:44499`),
 then `cd src/Crumpled.VerifyOwnership/Client && npm run generate-client`. Never hand-edit `src/api/*.gen.ts`
 - it's gitignored and CI always regenerates it. Never use raw `fetch()` in Client code - always the
 generated SDK functions from `src/api/index.js`.

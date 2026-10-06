@@ -228,7 +228,7 @@ jobs:
         # on Umbraco having routable content, which races with a fresh unattended install and can
         # throw ("No UmbracoRouteValues feature was found") if hit before content is ready.
         for i in {1..30}; do
-          if curl -k -s -o /dev/null -w "%{http_code}" https://localhost:44399/umbraco/swagger/crumpledverifyownership/swagger.json | grep -q "200"; then
+          if curl -k -s -o /dev/null -w "%{http_code}" https://localhost:44499/umbraco/swagger/crumpledverifyownership/swagger.json | grep -q "200"; then
             echo "Umbraco is responding!"
             exit 0
           fi
@@ -384,7 +384,7 @@ jobs:
         sleep 5
 
         for i in {1..30}; do
-          if curl -k -s -o /dev/null -w "%{http_code}" https://localhost:44399/umbraco/swagger/crumpledverifyownership/swagger.json | grep -q "200"; then
+          if curl -k -s -o /dev/null -w "%{http_code}" https://localhost:44499/umbraco/swagger/crumpledverifyownership/swagger.json | grep -q "200"; then
             exit 0
           fi
           sleep 2
