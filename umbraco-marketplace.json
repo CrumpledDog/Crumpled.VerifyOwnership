@@ -1,0 +1,31 @@
+{
+  "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json",
+  "Title": "Crumpled VerifyOwnership",
+  "AuthorDetails": {
+    "Name": "Crumpled Dog",
+    "Description": "Umbraco consultants and developers specialising in Cloudflare, Azure, LLMs, AI, and Agents",
+    "Url": "https://github.com/CrumpledDog",
+    "ImageUrl": "https://github.com/crumpleddog.png",
+    "Contributors": [
+      {
+        "Name": "Crumpled Dog",
+        "Url": "https://github.com/CrumpledDog/"
+      },
+      {
+        "Name": "Jeavon Leopold",
+        "Url": "https://github.com/Jeavon"
+      },
+      {
+        "Name": "Marc Goodson",
+        "Url": "https://github.com/marcemarc"
+      }
+    ]
+  },
+  "Category": "Developer Tools",
+  "AlternateCategory": "Search Engine Optimization",
+  "IssueTrackerUrl": "https://github.com/CrumpledDog/Crumpled.VerifyOwnership/issues",
+  "LicenseTypes": [ "Free" ],
+  "PackageType": "Package",
+  "Tags": [ "Google Search Console", "Bing Webmaster Tools", "Site Verification", "SEO", "Ownership Verification" ],
+  "VersionDependencyMode": "SemVer"
+}
