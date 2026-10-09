@@ -70,7 +70,7 @@ jobs:
       - name: Calculate Branch Slug
         id: calculate-branch
         run: |
-          BRANCH_NAME="${{ github.ref_name }}"
+          BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
           echo "Current branch: $BRANCH_NAME"
 
           if [[ "$BRANCH_NAME" == hotfix/* ]] || [[ "$BRANCH_NAME" == feature/* ]]; then
@@ -92,7 +92,7 @@ jobs:
       - name: Update .releaserc for current branch
         if: ${{ steps.calculate-branch.outputs.prerelease_id != '' }}
         run: |
-          BRANCH_NAME="${{ github.ref_name }}"
+          BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
           PRERELEASE_ID="${{ steps.calculate-branch.outputs.prerelease_id }}"
 
           jq --arg name "$BRANCH_NAME" --arg prerelease "$PRERELEASE_ID" \
@@ -114,7 +114,7 @@ jobs:
             @semantic-release/commit-analyzer
             @semantic-release/release-notes-generator
             @semantic-release/github
-            conventional-changelog-conventionalcommits
+            conventional-changelog-conventionalcommits@^9
 
       - name: Set Version
         id: set-version
@@ -148,7 +148,15 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
+    # This package was generated without a Client/ (backoffice UI) - all these steps self-skip via
+    # this hashFiles guard rather than the workflow needing two variants.
+    - name: Check for Client
+      id: has-client
+      shell: bash
+      run: echo "present=${{ hashFiles(format('{0}/package.json', env.PATH_TO_CLIENT)) != '' }}" >> $GITHUB_OUTPUT
+
     - name: Setup Node.js environment
+      if: steps.has-client.outputs.present == 'true'
       uses: actions/setup-node@v6
       with:
         node-version: 'lts/*'
@@ -156,11 +164,13 @@ jobs:
         cache-dependency-path: '${{ env.PATH_TO_CLIENT }}/package-lock.json'
 
     - name: Install Client dependencies
+      if: steps.has-client.outputs.present == 'true'
       working-directory: ${{ env.PATH_TO_CLIENT }}
       run: npm ci
 
     - name: Cache generated OpenAPI client
       id: codegen-cache
+      if: steps.has-client.outputs.present == 'true'
       uses: actions/cache@v6
       with:
         path: ${{ env.PATH_TO_CLIENT }}/src/api
@@ -218,7 +228,7 @@ jobs:
         # on Umbraco having routable content, which races with a fresh unattended install and can
         # throw ("No UmbracoRouteValues feature was found") if hit before content is ready.
         for i in {1..30}; do
-          if curl -k -s -o /dev/null -w "%{http_code}" https://localhost:44399/umbraco/swagger/crumpledverifyownership/swagger.json | grep -q "200"; then
+          if curl -k -s -o /dev/null -w "%{http_code}" https://localhost:44499/umbraco/swagger/crumpledverifyownership/swagger.json | grep -q "200"; then
             echo "Umbraco is responding!"
             exit 0
           fi
@@ -228,7 +238,7 @@ jobs:
         exit 1
 
     - name: CodeGen
-      if: steps.codegen-cache.outputs.cache-hit != 'true' || inputs.force_codegen == true
+      if: steps.has-client.outputs.present == 'true' && (steps.codegen-cache.outputs.cache-hit != 'true' || inputs.force_codegen == true)
       working-directory: ${{ env.PATH_TO_CLIENT }}
       run: npm run generate-client
 
@@ -247,6 +257,7 @@ jobs:
       run: '.github/scripts/Check-StartupErrors.ps1 -LogPath "${{ env.PATH_TO_TESTSITE }}/umbraco/Logs"'
 
     - name: Build Client
+      if: steps.has-client.outputs.present == 'true'
       working-directory: ${{ env.PATH_TO_CLIENT }}
       run: npm run build
 
@@ -373,7 +384,7 @@ jobs:
         sleep 5
 
         for i in {1..30}; do
-          if curl -k -s -o /dev/null -w "%{http_code}" https://localhost:44399/umbraco/swagger/crumpledverifyownership/swagger.json | grep -q "200"; then
+          if curl -k -s -o /dev/null -w "%{http_code}" https://localhost:44499/umbraco/swagger/crumpledverifyownership/swagger.json | grep -q "200"; then
             exit 0
           fi
           sleep 2

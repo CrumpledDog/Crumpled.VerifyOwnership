@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using Crumpled.VerifyOwnership.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace Crumpled.VerifyOwnership.Middleware
 {
@@ -12,8 +13,13 @@ namespace Crumpled.VerifyOwnership.Middleware
     public partial class GoogleSiteVerificationMiddleware : IMiddleware
     {
         private readonly IGoogleSiteVerificationStore _store;
+        private readonly ILogger<GoogleSiteVerificationMiddleware> _logger;
 
-        public GoogleSiteVerificationMiddleware(IGoogleSiteVerificationStore store) => _store = store;
+        public GoogleSiteVerificationMiddleware(IGoogleSiteVerificationStore store, ILogger<GoogleSiteVerificationMiddleware> logger)
+        {
+            _store = store;
+            _logger = logger;
+        }
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
@@ -25,7 +31,7 @@ namespace Crumpled.VerifyOwnership.Middleware
             }
 
             var token = match.Groups["token"].Value;
-            if (!_store.GetCodes().Contains(token, StringComparer.Ordinal))
+            if (!_store.GetEntries().Any(entry => string.Equals(entry.Id, token, StringComparison.Ordinal)))
             {
                 await next(context);
                 return;
@@ -33,6 +39,23 @@ namespace Crumpled.VerifyOwnership.Middleware
 
             context.Response.ContentType = "text/plain";
             await context.Response.WriteAsync($"google-site-verification: google{token}.html");
+
+            var userAgent = context.Request.Headers.UserAgent.ToString();
+
+            // User-Agent is a diagnostic hint only, logged for anyone who wants a full audit trail - it is
+            // trivially spoofable and must never be treated as a security signal.
+            _logger.LogInformation(
+                "Served Google site-verification file for id {Id} to User-Agent {UserAgent}.",
+                token,
+                userAgent);
+
+            // Only persist a "last requested" touch for requests that at least look like Google's crawler -
+            // reduces how often the (still throttled) tracking write is even attempted, per request from the
+            // team. This is noise reduction, not authentication: it does not change what gets served above.
+            if (userAgent.Contains("google", StringComparison.OrdinalIgnoreCase))
+            {
+                _store.RecordRequestServed(token);
+            }
         }
 
         [GeneratedRegex(@"^/google(?<token>[a-f0-9]+)\.html$")]

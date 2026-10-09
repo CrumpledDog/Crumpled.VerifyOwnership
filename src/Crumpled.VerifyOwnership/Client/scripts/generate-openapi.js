@@ -9,7 +9,7 @@ const openApiUrl = process.argv[2];
 if (openApiUrl === undefined) {
   console.error(chalk.red(`ERROR: Missing URL to OpenAPI spec`));
   console.error(`Please provide the URL to the OpenAPI spec as the first argument found in ${chalk.yellow('package.json')}`);
-  console.error(`Example: node generate-openapi.js ${chalk.yellow('https://localhost:44399/umbraco/openapi/REPLACE_ME.json')}`);
+  console.error(`Example: node generate-openapi.js ${chalk.yellow('https://localhost:44499/umbraco/openapi/REPLACE_ME.json')}`);
   process.exit();
 }
 

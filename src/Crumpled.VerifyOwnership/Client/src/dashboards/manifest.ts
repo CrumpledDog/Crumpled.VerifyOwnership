@@ -3,7 +3,7 @@ export const manifests: Array<UmbExtensionManifest> = [
     name: "Crumpled Verify Ownership Dashboard",
     alias: "Crumpled.VerifyOwnership.Dashboard",
     type: "dashboard",
-    js: () => import("./dashboard.element.js"),
+    element: () => import("./dashboard.element.js"),
     meta: {
       label: "Site Verification",
       pathname: "verify-ownership",
