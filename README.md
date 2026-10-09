@@ -1,5 +1,9 @@
 # Crumpled.VerifyOwnership
 
+[![NuGet](https://img.shields.io/nuget/v/Crumpled.VerifyOwnership?logo=nuget)](https://www.nuget.org/packages/Crumpled.VerifyOwnership)
+[![NuGet downloads](https://img.shields.io/nuget/dt/Crumpled.VerifyOwnership?logo=nuget)](https://www.nuget.org/packages/Crumpled.VerifyOwnership)
+[![Build](https://github.com/CrumpledDog/Crumpled.VerifyOwnership/actions/workflows/ci.yml/badge.svg)](https://github.com/CrumpledDog/Crumpled.VerifyOwnership/actions/workflows/ci.yml)
+
 Google Search Console and Bing Webmaster Tools site-ownership verification for Umbraco.
 
 Both services' file-based verification methods normally require uploading a static file to your site's root
