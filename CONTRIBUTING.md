@@ -105,7 +105,44 @@ Useful commands:
 ```bash
 git worktree list           # see every worktree and which branch it has checked out
 git worktree remove <path>  # remove one you no longer need (must be clean - commit or stash first)
+git worktree prune          # forget worktrees whose folder you deleted by hand
 ```
+
+#### Setting up and using the v2 worktree
+
+One-time setup, from the `develop/v1` clone:
+
+```bash
+git fetch origin
+git worktree add ../Crumpled.VerifyOwnership-v2 develop/v2
+cd ../Crumpled.VerifyOwnership-v2
+git config merge.ours.driver true            # per worktree - required before the first merge
+cd src/Crumpled.VerifyOwnership/Client && npm ci
+```
+
+Generated output (`Client/src/api/**` and the built bundle under `src/Crumpled.VerifyOwnership/wwwroot/`) is
+gitignored, so **each worktree builds its own**: start the DemoSite (`dotnet run` in
+`src/Crumpled.VerifyOwnership.DemoSite`), then run `npm run generate-client && npm run build` in the Client folder.
+The v1 and v2 copies genuinely differ (Umbraco 17 vs 18 OpenAPI routes and generated SDK names), so don't copy one
+worktree's generated files into the other.
+
+Day to day:
+
+1. Make and push the change on `develop/v1` as normal.
+2. `cd ../Crumpled.VerifyOwnership-v2 && git pull && git merge develop/v1` (never cherry-pick).
+3. If the merge touched `Client/src/**`, regenerate and rebuild the client there (against a running v2 DemoSite).
+4. Push `develop/v2` — always after `develop/v1` has been pushed.
+
+Things to know:
+
+- A branch can only be checked out in **one** worktree at a time, so `git checkout develop/v2` in the v1 clone will
+  refuse. Don't try to work around it - `cd` to the other worktree instead.
+- Each worktree has its own `bin`/`obj`, `node_modules` and local SQLite database (`umbraco/Data`), so they never
+  interfere with each other. Open each folder in its own editor window.
+- Both DemoSites use `https://localhost:44499`, so run one at a time (or start the second with `--urls`).
+- The `merge=ours` files (`Directory.*.props`, `.releaserc`, `Client/package.json` + lockfile) keep each branch's own
+  version during a merge. If you change one of them deliberately (for example a new `.releaserc` rule), apply the
+  change on **both** branches by hand - the merge will not carry it across.
 
 A handful of files are intended to always diverge between the two branch lines (see `/.gitattributes`
 `merge=ours` entries): `Directory.Packages.props` (the `Umbraco.Cms.*` package version pins),
