@@ -68,7 +68,6 @@
 
   <ItemGroup>
     <None Include="../../LICENSE" Pack="true" PackagePath="" />
-    <None Include="../../README.md" Pack="true" PackagePath="" />
     <None Include="../../icons/icon-verifyownership.png" Pack="true" PackagePath="" />
     <None Include="../../docs/dashboard-screenshot.png" Pack="true" PackagePath="docs/" />
   </ItemGroup>
@@ -82,5 +81,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
+
+  <Import Project="NuGetReadme.targets" />
 
 </Project>
