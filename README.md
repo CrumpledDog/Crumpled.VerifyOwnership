@@ -115,8 +115,8 @@ about which codes are configured is ever affected.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the branching strategy and formatting requirements.
+See [CONTRIBUTING.md](https://github.com/CrumpledDog/Crumpled.VerifyOwnership/blob/develop/v1/CONTRIBUTING.md) for the branching strategy and formatting requirements.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](https://github.com/CrumpledDog/Crumpled.VerifyOwnership/blob/develop/v1/LICENSE)
