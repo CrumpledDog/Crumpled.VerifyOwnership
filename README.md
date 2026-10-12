@@ -13,6 +13,8 @@ or forget about. Each entry records who it belongs to and when it was added, so 
 clear "remove this one" action. A Settings-section backoffice panel lets admins add or remove entries at
 any time, without a redeploy.
 
+![Crumpled VerifyOwnership logo](https://raw.githubusercontent.com/CrumpledDog/Crumpled.VerifyOwnership/develop/v1/icons/icon-verifyownership-128.png)
+
 ## Installation
 
 ```bash
