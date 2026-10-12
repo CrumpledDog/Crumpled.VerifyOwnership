@@ -22,7 +22,6 @@
     ]
   },
   "Category": "Developer Tools",
-  "AlternateCategory": "Search Engine Optimization",
   "IssueTrackerUrl": "https://github.com/CrumpledDog/Crumpled.VerifyOwnership/issues",
   "LicenseTypes": [ "Free" ],
   "PackageType": "Package",
