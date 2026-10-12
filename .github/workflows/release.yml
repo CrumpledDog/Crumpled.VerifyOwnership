@@ -173,11 +173,12 @@ jobs:
     - name: Health Check
       shell: bash
       run: |
-        # Polls the package's own swagger.json rather than the site root - the root route depends
+        # Polls the package's own OpenAPI document (swagger on Umbraco 17, openapi on 18) rather than the site root - the root route depends
         # on Umbraco having routable content, which races with a fresh unattended install and can
         # throw ("No UmbracoRouteValues feature was found") if hit before content is ready.
         for i in {1..30}; do
-          if curl -k -s -o /dev/null -w "%{http_code}" https://localhost:44499/umbraco/swagger/crumpledverifyownership/swagger.json | grep -q "200"; then
+          if for u in "https://localhost:44499/umbraco/swagger/crumpledverifyownership/swagger.json" "https://localhost:44499/umbraco/openapi/crumpledverifyownership.json"; do curl -k -s -o /dev/null -w "%{http_code}
+" "$u"; done | grep -q "200"; then
             exit 0
           fi
           sleep 2
@@ -314,7 +315,8 @@ jobs:
         sleep 5
 
         for i in {1..30}; do
-          if curl -k -s -o /dev/null -w "%{http_code}" https://localhost:44499/umbraco/swagger/crumpledverifyownership/swagger.json | grep -q "200"; then
+          if for u in "https://localhost:44499/umbraco/swagger/crumpledverifyownership/swagger.json" "https://localhost:44499/umbraco/openapi/crumpledverifyownership.json"; do curl -k -s -o /dev/null -w "%{http_code}
+" "$u"; done | grep -q "200"; then
             exit 0
           fi
           sleep 2
