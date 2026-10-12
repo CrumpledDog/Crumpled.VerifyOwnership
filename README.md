@@ -13,7 +13,7 @@ or forget about. Each entry records who it belongs to and when it was added, so 
 clear "remove this one" action. A Settings-section backoffice panel lets admins add or remove entries at
 any time, without a redeploy.
 
-<img src="icons/icon-verifyownership.png" width="120" height="120" alt="">
+<img src="https://raw.githubusercontent.com/CrumpledDog/Crumpled.VerifyOwnership/develop/v1/icons/icon-verifyownership.png" width="120" height="120" alt="">
 
 ## Installation
 
@@ -72,7 +72,7 @@ section (e.g. "BingSiteAuth.xml last requested: ...") rather than per entry, sin
 shared file touches every code at once. Both sections have a two-field form (code + person name) to add new
 entries and a Remove action per entry. Changes take effect immediately (no restart needed).
 
-![Site Verification dashboard showing the Google and Bing sections](docs/dashboard-screenshot.png)
+![Site Verification dashboard showing the Google and Bing sections](https://raw.githubusercontent.com/CrumpledDog/Crumpled.VerifyOwnership/develop/v1/docs/dashboard-screenshot.png)
 
 ## Last requested tracking
 
