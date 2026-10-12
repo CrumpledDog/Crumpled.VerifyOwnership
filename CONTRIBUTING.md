@@ -26,9 +26,11 @@ This project uses Git Flow with version-specific branches, one pair per supporte
 
 ### Main Branches
 
-- **`develop/v1`** - Main development branch for Umbraco 17 (protected, default branch)
-- **`release/v1`** - Stable release branch for production releases (protected)
+- **`develop/v1`** - Main development branch for Umbraco 17, package `1.x` (protected, default branch)
+- **`release/v1`** - Stable release branch for Umbraco 17 production releases (protected)
 - **`beta/v1`** - Beta releases (protected, created only once actually needed)
+- **`develop/v2`** / **`release/v2`** - The Umbraco 18 line, package `2.x`. Merge-only: see
+  "Umbraco 17/18 branch lines" below
 
 ### Supporting Branches
 
@@ -62,19 +64,33 @@ git push -u origin feature/v1/my-new-feature
 
 ### Umbraco 17/18 branch lines (v1/v2) and git worktrees
 
-This repo is designed to eventually support two Umbraco CMS majors from parallel branch lines, once Umbraco
-18 support is needed:
+This repo supports two Umbraco CMS majors from parallel branch lines:
 
-- `develop/v1` / `release/v1` — targets Umbraco CMS 17. **All feature and bugfix development happens here.**
-- `develop/v2` / `release/v2` — targets Umbraco CMS 18, added later. This line is merge-only — never branch
+- `develop/v1` / `release/v1` — targets Umbraco CMS 17 (package `1.x`). **All feature and bugfix development
+  happens here.**
+- `develop/v2` / `release/v2` — targets Umbraco CMS 18 (package `2.x`). This line is merge-only — never branch
   a feature or hotfix directly off it; changes only arrive there via `git merge develop/v1` (never
   `git cherry-pick`, so the same change doesn't get re-flagged as a conflict on every later merge).
+
+After any change lands on `develop/v1`, merge it forward:
+
+```bash
+cd ../Crumpled.VerifyOwnership-v2     # the develop/v2 worktree (see below)
+git merge develop/v1
+# rebuild if Client/src/** changed: npm run generate-client && npm run build (v2 DemoSite running)
+git push origin develop/v2             # push develop/v1 first, then develop/v2
+```
+
+`release/v2` is promoted from `develop/v2` only when cutting a v2 release (the same way `release/v1` is from
+`develop/v1`). The first commit on `develop/v2` carries a `BREAKING CHANGE:` footer so semantic-release starts
+the line at `2.0.0` instead of continuing `1.x`. Workflow files are shared across both lines (not `merge=ours`),
+so edit them on `develop/v1` and keep them working for both Umbraco majors.
 
 Switching between `develop/v1` and `develop/v2` with a plain `git checkout` in one working copy leaves stale
 artifacts behind: `node_modules` installed against the wrong `@umbraco-cms/backoffice` version, `bin`/`obj`
 build output from the other major, and a local runtime database migrated by the wrong Umbraco major. A
-[git worktree](https://git-scm.com/docs/git-worktree) avoids this entirely. Once `develop/v2` exists, run
-this from inside the `develop/v1` clone:
+[git worktree](https://git-scm.com/docs/git-worktree) avoids this entirely. Run this once from inside the
+`develop/v1` clone:
 
 ```bash
 # <path> can be any folder that doesn't already exist - a sibling directory
