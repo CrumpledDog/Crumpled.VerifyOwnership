@@ -111,7 +111,22 @@ about which codes are configured is ever affected.
 
 ## Requirements
 
-- Umbraco CMS 17 or 18
+Each Umbraco major has its own package version line, so pick the one that matches your site:
+
+| Package version | Umbraco CMS | Branch |
+|---|---|---|
+| `1.x` | 17 (`>= 17.7.0, < 18.0.0`) | `release/v1` |
+| `2.x` | 18 (`>= 18.2.1, < 19.0.0`) | `release/v2` |
+
+```bash
+# Umbraco 17
+dotnet add package Crumpled.VerifyOwnership --version "1.*"
+
+# Umbraco 18
+dotnet add package Crumpled.VerifyOwnership --version "2.*"
+```
+
+Both lines get the same features and fixes; the `2.x` line is `1.x` rebuilt against Umbraco 18.
 
 ## Contributing
 

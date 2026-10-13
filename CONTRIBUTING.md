@@ -26,9 +26,11 @@ This project uses Git Flow with version-specific branches, one pair per supporte
 
 ### Main Branches
 
-- **`develop/v1`** - Main development branch for Umbraco 17 (protected, default branch)
-- **`release/v1`** - Stable release branch for production releases (protected)
+- **`develop/v1`** - Main development branch for Umbraco 17, package `1.x` (protected, default branch)
+- **`release/v1`** - Stable release branch for Umbraco 17 production releases (protected)
 - **`beta/v1`** - Beta releases (protected, created only once actually needed)
+- **`develop/v2`** / **`release/v2`** - The Umbraco 18 line, package `2.x`. Merge-only: see
+  "Umbraco 17/18 branch lines" below
 
 ### Supporting Branches
 
@@ -62,19 +64,33 @@ git push -u origin feature/v1/my-new-feature
 
 ### Umbraco 17/18 branch lines (v1/v2) and git worktrees
 
-This repo is designed to eventually support two Umbraco CMS majors from parallel branch lines, once Umbraco
-18 support is needed:
+This repo supports two Umbraco CMS majors from parallel branch lines:
 
-- `develop/v1` / `release/v1` — targets Umbraco CMS 17. **All feature and bugfix development happens here.**
-- `develop/v2` / `release/v2` — targets Umbraco CMS 18, added later. This line is merge-only — never branch
+- `develop/v1` / `release/v1` — targets Umbraco CMS 17 (package `1.x`). **All feature and bugfix development
+  happens here.**
+- `develop/v2` / `release/v2` — targets Umbraco CMS 18 (package `2.x`). This line is merge-only — never branch
   a feature or hotfix directly off it; changes only arrive there via `git merge develop/v1` (never
   `git cherry-pick`, so the same change doesn't get re-flagged as a conflict on every later merge).
+
+After any change lands on `develop/v1`, merge it forward:
+
+```bash
+cd ../Crumpled.VerifyOwnership-v2     # the develop/v2 worktree (see below)
+git merge develop/v1
+# rebuild if Client/src/** changed: npm run generate-client && npm run build (v2 DemoSite running)
+git push origin develop/v2             # push develop/v1 first, then develop/v2
+```
+
+`release/v2` is promoted from `develop/v2` only when cutting a v2 release (the same way `release/v1` is from
+`develop/v1`). The first commit on `develop/v2` carries a `BREAKING CHANGE:` footer so semantic-release starts
+the line at `2.0.0` instead of continuing `1.x`. Workflow files are shared across both lines (not `merge=ours`),
+so edit them on `develop/v1` and keep them working for both Umbraco majors.
 
 Switching between `develop/v1` and `develop/v2` with a plain `git checkout` in one working copy leaves stale
 artifacts behind: `node_modules` installed against the wrong `@umbraco-cms/backoffice` version, `bin`/`obj`
 build output from the other major, and a local runtime database migrated by the wrong Umbraco major. A
-[git worktree](https://git-scm.com/docs/git-worktree) avoids this entirely. Once `develop/v2` exists, run
-this from inside the `develop/v1` clone:
+[git worktree](https://git-scm.com/docs/git-worktree) avoids this entirely. Run this once from inside the
+`develop/v1` clone:
 
 ```bash
 # <path> can be any folder that doesn't already exist - a sibling directory
@@ -89,7 +105,44 @@ Useful commands:
 ```bash
 git worktree list           # see every worktree and which branch it has checked out
 git worktree remove <path>  # remove one you no longer need (must be clean - commit or stash first)
+git worktree prune          # forget worktrees whose folder you deleted by hand
 ```
+
+#### Setting up and using the v2 worktree
+
+One-time setup, from the `develop/v1` clone:
+
+```bash
+git fetch origin
+git worktree add ../Crumpled.VerifyOwnership-v2 develop/v2
+cd ../Crumpled.VerifyOwnership-v2
+git config merge.ours.driver true            # per worktree - required before the first merge
+cd src/Crumpled.VerifyOwnership/Client && npm ci
+```
+
+Generated output (`Client/src/api/**` and the built bundle under `src/Crumpled.VerifyOwnership/wwwroot/`) is
+gitignored, so **each worktree builds its own**: start the DemoSite (`dotnet run` in
+`src/Crumpled.VerifyOwnership.DemoSite`), then run `npm run generate-client && npm run build` in the Client folder.
+The v1 and v2 copies genuinely differ (Umbraco 17 vs 18 OpenAPI routes and generated SDK names), so don't copy one
+worktree's generated files into the other.
+
+Day to day:
+
+1. Make and push the change on `develop/v1` as normal.
+2. `cd ../Crumpled.VerifyOwnership-v2 && git pull && git merge develop/v1` (never cherry-pick).
+3. If the merge touched `Client/src/**`, regenerate and rebuild the client there (against a running v2 DemoSite).
+4. Push `develop/v2` — always after `develop/v1` has been pushed.
+
+Things to know:
+
+- A branch can only be checked out in **one** worktree at a time, so `git checkout develop/v2` in the v1 clone will
+  refuse. Don't try to work around it - `cd` to the other worktree instead.
+- Each worktree has its own `bin`/`obj`, `node_modules` and local SQLite database (`umbraco/Data`), so they never
+  interfere with each other. Open each folder in its own editor window.
+- Both DemoSites use `https://localhost:44499`, so run one at a time (or start the second with `--urls`).
+- The `merge=ours` files (`Directory.*.props`, `.releaserc`, `Client/package.json` + lockfile) keep each branch's own
+  version during a merge. If you change one of them deliberately (for example a new `.releaserc` rule), apply the
+  change on **both** branches by hand - the merge will not carry it across.
 
 A handful of files are intended to always diverge between the two branch lines (see `/.gitattributes`
 `merge=ours` entries): `Directory.Packages.props` (the `Umbraco.Cms.*` package version pins),
