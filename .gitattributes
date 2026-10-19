@@ -34,6 +34,7 @@
 # once per clone/worktree (see CONTRIBUTING.md).
 /Directory.Packages.props merge=ours
 /Directory.Build.props merge=ours
+/openapi-route.txt merge=ours
 /.releaserc merge=ours
 /src/Crumpled.VerifyOwnership/Client/package.json merge=ours
 /src/Crumpled.VerifyOwnership/Client/package-lock.json merge=ours
