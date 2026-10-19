@@ -9,6 +9,7 @@ using Umbraco.Cms.Api.Common.OpenApi;
 using Umbraco.Cms.Api.Management.OpenApi;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
+using Umbraco.Extensions;
 
 namespace Crumpled.VerifyOwnership.Composers
 {
@@ -38,6 +39,9 @@ namespace Crumpled.VerifyOwnership.Composers
             protected override string ApiName => Constants.ApiName;
         }
 
+        // Reuses Umbraco's own OperationIdHandler naming (no Handle override), scoped to this package's
+        // [MapToApi] controllers, so Umbraco 17 emits the same operationIds - and therefore the same generated
+        // SDK names - as Umbraco 18. This keeps Client/src call sites identical across the v1/v2 lines.
         public class CustomOperationHandler : OperationIdHandler
         {
             public CustomOperationHandler(IOptions<ApiVersioningOptions> apiVersioningOptions) : base(apiVersioningOptions)
@@ -45,11 +49,7 @@ namespace Crumpled.VerifyOwnership.Composers
             }
 
             protected override bool CanHandle(ApiDescription apiDescription, ControllerActionDescriptor controllerActionDescriptor)
-            {
-                return controllerActionDescriptor.ControllerTypeInfo.Namespace?.StartsWith("Crumpled.VerifyOwnership.Controllers", comparisonType: StringComparison.InvariantCultureIgnoreCase) is true;
-            }
-
-            public override string Handle(ApiDescription apiDescription) => $"{apiDescription.ActionDescriptor.RouteValues["action"]}";
+                => controllerActionDescriptor.HasMapToApiAttribute(Constants.ApiName);
         }
     }
 }

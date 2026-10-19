@@ -8,7 +8,7 @@ import {
 import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
 import { UUIInputElement } from "@umbraco-cms/backoffice/external/uui";
 import { UMB_NOTIFICATION_CONTEXT } from "@umbraco-cms/backoffice/notification";
-import { googleEntries, setGoogleEntries, bingEntries, setBingEntries } from "../api/index.js";
+import { getGoogleEntries, putGoogleEntries, getBingEntries, putBingEntries } from "../api/index.js";
 
 interface VerificationEntry {
   id: string;
@@ -130,7 +130,7 @@ export class CrumpledVerifyOwnershipDashboardElement extends UmbElementMixin(Lit
 
   async #load() {
     this._loading = true;
-    const [googleResult, bingResult] = await Promise.all([googleEntries(), bingEntries()]);
+    const [googleResult, bingResult] = await Promise.all([getGoogleEntries(), getBingEntries()]);
 
     if (!googleResult.error && googleResult.data) {
       this._googleEntries = [...googleResult.data.entries];
@@ -169,7 +169,7 @@ export class CrumpledVerifyOwnershipDashboardElement extends UmbElementMixin(Lit
   };
 
   async #saveGoogle(entries: VerificationEntry[]) {
-    const { error } = await setGoogleEntries({
+    const { error } = await putGoogleEntries({
       body: { entries: entries.map(({ id, personName }) => ({ id, personName })) },
     });
 
@@ -212,7 +212,7 @@ export class CrumpledVerifyOwnershipDashboardElement extends UmbElementMixin(Lit
   };
 
   async #saveBing(entries: VerificationEntry[]) {
-    const { error } = await setBingEntries({
+    const { error } = await putBingEntries({
       body: { entries: entries.map(({ id, personName }) => ({ id, personName })) },
     });
 
