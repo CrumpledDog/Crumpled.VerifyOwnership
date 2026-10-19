@@ -141,16 +141,16 @@ Things to know:
 - Each worktree has its own `bin`/`obj`, `node_modules` and local SQLite database (`umbraco/Data`), so they never
   interfere with each other. Open each folder in its own editor window.
 - Both DemoSites use `https://localhost:44499`, so run one at a time (or start the second with `--urls`).
-- The `merge=ours` files (`Directory.*.props`, `.releaserc`, `Client/package.json` + lockfile) keep each branch's own
+- The `merge=ours` files (`Directory.*.props`, `.releaserc`, `openapi-route.txt`, `Client/package.json` + lockfile) keep each branch's own
   version during a merge. If you change one of them deliberately (for example a new `.releaserc` rule), apply the
   change on **both** branches by hand - the merge will not carry it across.
 
 A handful of files are intended to always diverge between the two branch lines (see `/.gitattributes`
 `merge=ours` entries): `Directory.Packages.props` (the `Umbraco.Cms.*` package version pins),
 `Directory.Build.props` (`<UmbracoTargetMajor>`), `.releaserc` (each branch line's own semantic-release
-config), and `Client/package.json`/`package-lock.json` (the `@umbraco-cms/backoffice` version pin and the
-`generate-client` script's hardcoded OpenAPI discovery URL - Umbraco 17 exposes it at
-`/umbraco/swagger/<name>/swagger.json`, Umbraco 18 at `/umbraco/openapi/<name>.json`). Run
+config), `openapi-route.txt` (the OpenAPI discovery route - Umbraco 17 exposes it at
+`/umbraco/swagger/<name>/swagger.json`, Umbraco 18 at `/umbraco/openapi/<name>.json`; `generate-openapi.js` reads it), and
+`Client/package.json`/`package-lock.json` (the `@umbraco-cms/backoffice` version pin). Run
 `git config merge.ours.driver true` once per clone/worktree for this to take effect. The one genuine
 code-level difference between the two majors -
 OpenAPI document registration (Umbraco 17 uses Swashbuckle, Umbraco 18 uses ASP.NET Core's native OpenAPI) -
